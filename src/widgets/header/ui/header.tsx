@@ -1,15 +1,17 @@
 import { Logotype } from "@shared/assets/logotype";
-import { Menu } from "@shared/assets/menu";
 import { cn } from "@shared/utils/utils";
+import { getCartItemsCountSSR } from "../lib/cart-server";
 import Link from "next/link";
-import { useNavigation } from "../model/hooks/use-navigation";
+import { MobileNavigation } from "./mobile-navigation";
+import { DesktopNavigation } from "./desktop-navigation";
 
-export const Header = () => {
-  const { navigation, socials } = useNavigation();
+export const Header = async () => {
+  const cartItemsCount = await getCartItemsCountSSR();
+
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 flex items-center justify-between w-full border-b border-border backdrop-blur-xl",
+        "fixed z-50 top-0 left-0 flex items-center justify-between w-full border-b border-border backdrop-blur-md",
         "py-[18px] px-5",
         "sm:px-10 ",
         " lg:px-15",
@@ -17,40 +19,11 @@ export const Header = () => {
         "2xl:px-25"
       )}
     >
-      <Link href={"/"}>
+      <Link href={"/"} className="z-[1000]">
         <Logotype className={cn("w-[55px] h-auto", "sm:w-[86px]")} />
       </Link>
-      {/* Мобильное меню */}
-      <Menu className={cn("w-[37px] h-auto", "sm:w-[50px] block lg:hidden")} />
-      {/* Десктопное меню */}
-      <nav className="hidden lg:block">
-        <ul
-          className={cn(
-            "flex items-center gap-20 uppercase",
-            "text-lg align-top"
-          )}
-        >
-          {navigation.map((item) => (
-            <li key={item.label}>
-              <Link href={item.href}>{item.label}</Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      <nav className="hidden lg:block">
-        <ul
-          className={cn(
-            "flex items-center gap-20 uppercase",
-            "text-lg align-top"
-          )}
-        >
-          {socials.map((item) => (
-            <li key={item.label}>
-              <Link href={item.href}>{item.label}</Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <MobileNavigation cartItemsCount={cartItemsCount} />
+      <DesktopNavigation cartItemsCount={cartItemsCount} />
     </header>
   );
 };

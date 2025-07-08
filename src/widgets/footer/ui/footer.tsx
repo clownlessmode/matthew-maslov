@@ -11,7 +11,7 @@ export const Footer = () => {
   return (
     <footer
       className={cn(
-        "border-t border-border w-full pb-0! flex flex-col gap-[50px]",
+        "border-t border-border w-full pb-0! flex flex-col gap-[50px] bg-background z-[999999999] relative",
         "p-5",
         "sm:p-10 ",
         "lg:p-15",

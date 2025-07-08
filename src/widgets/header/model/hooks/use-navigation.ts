@@ -1,4 +1,4 @@
-export const useNavigation = () => {
+export const useNavigation = (itemsInCart: number = 0) => {
   return {
     navigation: [
       {
@@ -10,8 +10,8 @@ export const useNavigation = () => {
         href: "/lookbook",
       },
       {
-        label: "Contact",
-        href: "https://t.me/matthewmaslov",
+        label: `Cart ${itemsInCart > 0 ? `(${itemsInCart})` : ""}`,
+        href: "/cart",
       },
     ],
     socials: [

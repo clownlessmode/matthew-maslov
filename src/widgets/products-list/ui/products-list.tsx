@@ -1,5 +1,6 @@
 import { Product } from "@entities/product";
-import { getProducts } from "@widgets/products-list";
+import { getProducts } from "@entities/product";
+
 import { cn } from "@shared/utils/utils";
 
 export const ProductsList = async () => {

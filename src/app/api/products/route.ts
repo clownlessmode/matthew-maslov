@@ -125,11 +125,32 @@ const mockProducts: IProduct[] = [
   },
 ];
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Имитируем задержку API
     await new Promise((resolve) => setTimeout(resolve, 300));
 
+    // Получаем URL и query параметры
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (id) {
+      const product = mockProducts.find((p) => p.id === id);
+
+      if (!product) {
+        return NextResponse.json(
+          { error: "Product not found", success: false },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        product,
+        success: true,
+      });
+    }
+
+    // Если ID не передан, возвращаем все товары
     return NextResponse.json({
       products: mockProducts,
       total: mockProducts.length,
@@ -137,6 +158,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Failed to fetch products:", error);
+
     return NextResponse.json(
       { error: "Failed to fetch products", success: false },
       { status: 500 }
