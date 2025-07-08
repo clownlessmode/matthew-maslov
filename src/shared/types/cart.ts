@@ -1,44 +1,24 @@
-export interface ICartItem {
+export interface CartItem {
   id: string;
   productId: string;
   title: string;
-  shortTitle: string;
   price: number;
-  size: "S" | "M" | "L" | "XL" | "XXL";
-  quantity: number;
   image: string;
+  size: string;
+  quantity: number;
 }
 
-export interface ICart {
-  id: string;
-  items: ICartItem[];
+export interface Cart {
+  items: CartItem[];
   totalItems: number;
   totalPrice: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
-export interface ICartResponse {
-  cart: ICart;
-  success: boolean;
-}
-
-export interface ICartsResponse {
-  carts: ICart[];
-  success: boolean;
-}
-
-export interface IAddToCartRequest {
+export interface AddToCartParams {
   productId: string;
-  size: "S" | "M" | "L" | "XL" | "XXL";
+  title: string;
+  price: number;
+  image: string;
+  size: string;
   quantity?: number;
 }
-
-export interface IUpdateCartItemRequest {
-  cartItemId: string;
-  quantity: number;
-}
-
-export interface IRemoveFromCartRequest {
-  cartItemId: string;
-} 

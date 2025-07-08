@@ -1,15 +1,13 @@
-import React, { FC } from "react";
+import React from "react";
 import { useNavigation } from "../model/hooks/use-navigation";
 import { cn } from "@shared/utils/utils";
 import Link from "next/link";
 
-interface DesktopNavigationProps {
+interface Props {
   cartItemsCount: number;
 }
 
-export const DesktopNavigation: FC<DesktopNavigationProps> = ({
-  cartItemsCount,
-}) => {
+export const DesktopNavigation = ({ cartItemsCount }: Props) => {
   const { navigation, socials } = useNavigation(cartItemsCount);
 
   return (

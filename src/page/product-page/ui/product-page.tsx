@@ -66,7 +66,13 @@ const ProductPage: FC<Props> = ({ product }) => {
           <p className="text-sm sm:text-base font-semibold uppercase text-center">
             Состав: {product.composition.join(", ")}
           </p>
-          <AddToCart productId={product.id} selectedSize={selectedSize} />
+          <AddToCart
+            productId={product.id}
+            title={product.title}
+            price={product.price}
+            image={product.images[0]}
+            selectedSize={selectedSize}
+          />
         </section>
         <Image
           src={product.images[0]}
@@ -128,7 +134,13 @@ const ProductPage: FC<Props> = ({ product }) => {
           <p className="text-sm sm:text-base font-semibold uppercase text-center">
             Состав: {product.composition.join(", ")}
           </p>
-          <AddToCart productId={product.id} selectedSize={selectedSize} />
+          <AddToCart
+            productId={product.id}
+            title={product.title}
+            price={product.price}
+            image={product.images[0]}
+            selectedSize={selectedSize}
+          />
         </section>
         <section className="rounded-2xl p-5 border border-border flex flex-col justify-between items-center uppercase">
           <h1 className="text-2xl sm:text-4xl font-semibold text-center">

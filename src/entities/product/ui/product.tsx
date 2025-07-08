@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { IProduct } from "@entities/product";
-import { cn, formatPrice } from "@shared/utils/utils";
+import { cn } from "@shared/utils/utils";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,7 +22,7 @@ export const Product: FC<Props> = ({ product }) => {
         <div className="flex justify-between items-center text-[20px] sm:text-[32px] 2xl:text-[36px] tracking-tighter font-semibold">
           <h3>{product.shortTitle}</h3>
           <p className="text-muted-foreground text-right">
-            {formatPrice(product.price)} ₽
+            {product.price.toLocaleString().replace(",", " ")} ₽
           </p>
         </div>
       </article>

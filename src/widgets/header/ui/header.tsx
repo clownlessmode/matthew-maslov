@@ -1,12 +1,12 @@
 import { Logotype } from "@shared/assets/logotype";
 import { cn } from "@shared/utils/utils";
-import { getCartItemsCountSSR } from "../lib/cart-server";
 import Link from "next/link";
 import { MobileNavigation } from "./mobile-navigation";
 import { DesktopNavigation } from "./desktop-navigation";
+import { getCart } from "@shared/lib";
 
 export const Header = async () => {
-  const cartItemsCount = await getCartItemsCountSSR();
+  const cart = await getCart();
 
   return (
     <header
@@ -22,8 +22,8 @@ export const Header = async () => {
       <Link href={"/"} className="z-[1000]">
         <Logotype className={cn("w-[55px] h-auto", "sm:w-[86px]")} />
       </Link>
-      <MobileNavigation cartItemsCount={cartItemsCount} />
-      <DesktopNavigation cartItemsCount={cartItemsCount} />
+      <MobileNavigation cartItemsCount={cart.totalItems} />
+      <DesktopNavigation cartItemsCount={cart.totalItems} />
     </header>
   );
 };

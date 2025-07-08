@@ -127,13 +127,13 @@ const mockProducts: IProduct[] = [
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Имитируем задержку API
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const id = params.id;
+    const { id } = await params;
     const product = mockProducts.find((p) => p.id === id);
 
     if (!product) {

@@ -6,13 +6,11 @@ import { cn } from "@shared/utils/utils";
 import { useNavigation } from "../model";
 import Link from "next/link";
 
-interface MobileNavigationProps {
+interface Props {
   cartItemsCount: number;
 }
 
-export const MobileNavigation: FC<MobileNavigationProps> = ({
-  cartItemsCount,
-}) => {
+export const MobileNavigation: FC<Props> = ({ cartItemsCount }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { navigation, socials } = useNavigation(cartItemsCount);
   return (

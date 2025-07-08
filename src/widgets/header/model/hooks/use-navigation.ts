@@ -1,4 +1,4 @@
-export const useNavigation = (itemsInCart: number = 0) => {
+export const useNavigation = (cartItemsCount: number) => {
   return {
     navigation: [
       {
@@ -10,7 +10,7 @@ export const useNavigation = (itemsInCart: number = 0) => {
         href: "/lookbook",
       },
       {
-        label: `Cart ${itemsInCart > 0 ? `(${itemsInCart})` : ""}`,
+        label: `Cart ${cartItemsCount > 0 ? `(${cartItemsCount})` : ""}`,
         href: "/cart",
       },
     ],
