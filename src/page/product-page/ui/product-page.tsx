@@ -40,7 +40,7 @@ const ProductPage: FC<Props> = ({ product }) => {
               alt={"product"}
               width={1000 * 3}
               height={1000 * 3}
-              className=" w-full h-[calc(100vh-120px)] sm:h-auto aspect-square object-cover overflow-hidden rounded-2xl"
+              className=" w-full h-[calc(100svh-120px)] sm:h-auto aspect-square object-cover overflow-hidden rounded-2xl"
             />
           ))}
         </div>
@@ -67,11 +67,8 @@ const ProductPage: FC<Props> = ({ product }) => {
             Состав: {product.composition.join(", ")}
           </p>
           <AddToCart
-            productId={product.id}
-            title={product.title}
-            price={product.price}
-            image={product.images[0]}
-            selectedSize={selectedSize}
+            product={product}
+            selectedSize={selectedSize as IProduct["sizes"][number]}
           />
         </section>
         <Image
@@ -79,7 +76,7 @@ const ProductPage: FC<Props> = ({ product }) => {
           alt={product.title}
           width={1000 * 3}
           height={1000 * 3}
-          className="w-full col-span-5 h-[calc(100vh-120px)] sm:h-auto aspect-square object-cover overflow-hidden rounded-2xl"
+          className="w-full col-span-5 h-[calc(100svh-120px)] sm:h-auto aspect-square object-cover overflow-hidden rounded-2xl"
         />
         <section className="col-span-4 col-start-2 rounded-2xl p-5 lg:p-8 border border-border flex flex-col justify-between items-center uppercase">
           <h1 className="text-2xl sm:text-4xl font-semibold text-center">
@@ -110,7 +107,7 @@ const ProductPage: FC<Props> = ({ product }) => {
           alt={product.title}
           width={1000 * 3}
           height={1000 * 3}
-          className="mt-[80px] w-full h-[calc(100vh-120px)] sm:h-auto aspect-square object-cover overflow-hidden rounded-2xl"
+          className="mt-[80px] w-full h-[calc(100svh-120px)] sm:h-auto aspect-square object-cover overflow-hidden rounded-2xl"
         />
         <section className="rounded-2xl p-5 border border-border min-h-[450px] sm:min-h-[550px] flex flex-col justify-between items-center">
           <h1 className="text-2xl font-semibold text-center sm:text-4xl">
@@ -135,11 +132,8 @@ const ProductPage: FC<Props> = ({ product }) => {
             Состав: {product.composition.join(", ")}
           </p>
           <AddToCart
-            productId={product.id}
-            title={product.title}
-            price={product.price}
-            image={product.images[0]}
-            selectedSize={selectedSize}
+            product={product}
+            selectedSize={selectedSize as IProduct["sizes"][number]}
           />
         </section>
         <section className="rounded-2xl p-5 border border-border flex flex-col justify-between items-center uppercase">

@@ -4,7 +4,7 @@ export const Hero = () => {
   return (
     <section
       className={cn(
-        "flex items-end justify-start min-h-[100vh] uppercase w-full",
+        "flex items-end justify-start min-h-[100svh] uppercase w-full",
         "py-5 pl-5",
         "sm:p-10",
         "lg:p-15",

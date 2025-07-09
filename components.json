@@ -6,13 +6,13 @@
   "tailwind": {
     "config": "",
     "css": "src/app/_styles/globals.css",
-    "baseColor": "stone",
+    "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
   },
   "aliases": {
-    "shared": "@shared",
-    "utils": "@shared/utils",
+    "components": "@shared/ui",
+    "utils": "@shared/utils/utils",
     "ui": "@shared/ui",
     "lib": "@shared/lib",
     "hooks": "@shared/hooks"

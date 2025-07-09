@@ -2,37 +2,24 @@
 import { Button } from "@shared/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect } from "react";
-import { addToCartAction } from "../actions/add-to-cart-action";
+import { IProduct } from "@entities/product";
+import { useCartStore } from "@shared/stores/cart.store";
 
 interface Props {
-  productId: string;
-  title: string;
-  price: number;
-  image: string;
-  selectedSize: string;
+  product: IProduct;
+  selectedSize: IProduct["sizes"][number];
 }
 
-export const AddToCart = ({
-  productId,
-  title,
-  price,
-  image,
-  selectedSize,
-}: Props) => {
+export const AddToCart = ({ product, selectedSize }: Props) => {
   const [isAdded, setIsAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const handleAddToCart = async () => {
     if (!isAdded && !isLoading && selectedSize) {
       setIsLoading(true);
       try {
-        await addToCartAction({
-          productId,
-          title,
-          price,
-          image,
-          size: selectedSize,
-        });
+        addToCart(product, selectedSize, 1);
         setIsAdded(true);
       } catch (error) {
         console.error("Failed to add to cart:", error);
