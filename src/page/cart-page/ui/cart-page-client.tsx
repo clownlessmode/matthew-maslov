@@ -26,11 +26,13 @@ import { cn, formatPrice } from "@shared/utils/utils";
 import { RadioGroup, RadioGroupItem } from "@shared/ui/radio-group";
 import { useEffect } from "react";
 import { useCdekOffices } from "../api";
+import { usePromoCode } from "../api/use-promocode";
 
 type CheckoutFormData = {
   name: string;
   phone: string;
   email: string;
+  promocode: string;
   city: string;
   delivery: string;
   region: string;
@@ -48,6 +50,15 @@ const CartPageClient = () => {
   const [openCdekPvz, setOpenCdekPvz] = useState(false);
 
   const {
+    promoCode,
+    loading: promoLoading,
+    error: promoError,
+    checkPromoCode,
+    clearPromoCode,
+    usePromoCode: markPromoCodeAsUsed,
+  } = usePromoCode();
+
+  const {
     register,
     control,
     handleSubmit,
@@ -60,6 +71,7 @@ const CartPageClient = () => {
       name: "",
       phone: "",
       email: "",
+      promocode: "",
       city: "",
       delivery: "cdek",
       region: "",
@@ -144,7 +156,7 @@ const CartPageClient = () => {
   const postcodeValidate = (value: string) => /^\d{6}$/.test(value);
 
   // onSubmit теперь только отправка, без ручной валидации
-  const onSubmit = (data: CheckoutFormData) => {
+  const onSubmit = async (data: CheckoutFormData) => {
     // const normalize = (str: string) =>
     //   str
     //     .trim()
@@ -161,7 +173,35 @@ const CartPageClient = () => {
     //   apartment: data.apartment.trim(),
     //   postcode: data.postcode.replace(/\D/g, ""),
     // };
-    console.log(data);
+
+    // Если есть промокод, увеличиваем счетчик использований
+    if (promoCode && data.promocode) {
+      const success = await markPromoCodeAsUsed(data.promocode);
+      if (!success) {
+        console.error("Не удалось использовать промокод");
+        return;
+      }
+    }
+
+    const orderData = {
+      ...data,
+      promoCode: promoCode
+        ? {
+            code: promoCode.code,
+            discount: promoCode.discount,
+          }
+        : null,
+      total: (() => {
+        const subtotal = items.reduce(
+          (acc, item) => acc + item.price * item.quantity,
+          0
+        );
+        const discount = promoCode ? (subtotal * promoCode.discount) / 100 : 0;
+        return subtotal - discount;
+      })(),
+    };
+
+    console.log(orderData);
   };
 
   const clearDeliveryFields = () => {
@@ -211,6 +251,38 @@ const CartPageClient = () => {
               type="email"
               className={cn(errors.email && "border-destructive")}
             />
+          </div>
+          <div className="flex flex-col col-span-2 w-full lg:gap-4 gap-1">
+            <Label>Промокод</Label>
+            <div className="relative">
+              <Input
+                {...register("promocode")}
+                placeholder="Введите промокод"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.trim()) {
+                    checkPromoCode(value);
+                  } else {
+                    clearPromoCode();
+                  }
+                }}
+                className={cn(
+                  promoError && "border-destructive",
+                  promoCode && "border-green-500",
+                  "w-full"
+                )}
+              />
+              {promoLoading && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                </div>
+              )}
+              {promoCode && (
+                <div className="absolute right-8 top-1/2 transform -translate-y-1/2 text-green-500">
+                  <Check className="size-6" />
+                </div>
+              )}
+            </div>
           </div>
           <Label className="mt-[40px] lg:text-4xl md:text-3xl sm:text-2xl text-xl font-semibold">
             Доставка
@@ -556,15 +628,25 @@ const CartPageClient = () => {
               </Link>
             </div>
           )}
-          <div className="lg:my-[40px] md:my-[20px] my-[10px] sm:text-3xl text-xl md:text-4xl 2xl:text-5xl font-semibold flex flex-row items-center justify-between">
-            <p>ИТОГО:</p>
-            <p>
-              {formatPrice(
-                items.reduce((acc, item) => acc + item.price * item.quantity, 0)
-              )}
-              ₽
-            </p>
-          </div>
+          {(() => {
+            const subtotal = items.reduce(
+              (acc, item) => acc + item.price * item.quantity,
+              0
+            );
+            const discount = promoCode
+              ? (subtotal * promoCode.discount) / 100
+              : 0;
+            const total = subtotal - discount;
+
+            return (
+              <>
+                <div className="lg:my-[20px] md:my-[10px] my-[5px] sm:text-3xl text-xl md:text-4xl 2xl:text-5xl font-semibold flex flex-row items-center justify-between">
+                  <p>ИТОГО:</p>
+                  <p>{formatPrice(total)} ₽ </p>
+                </div>
+              </>
+            );
+          })()}
         </section>
       </div>
     </>

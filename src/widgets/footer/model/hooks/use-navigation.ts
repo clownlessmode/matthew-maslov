@@ -6,12 +6,12 @@ export const useNavigation = () => {
         href: "/privacy-policy",
       },
       {
-        label: "Shipping Policy",
-        href: "/shipping-policy",
+        label: "Data Processing Policy",
+        href: "/data-processing-policy",
       },
       {
-        label: "Terms & Conditions",
-        href: "/terms-and-conditions",
+        label: "Public Offer",
+        href: "/public-offer",
       },
       {
         label: "Website by ml agency",
