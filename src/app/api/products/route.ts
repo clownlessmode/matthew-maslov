@@ -1,141 +1,26 @@
 import { NextResponse } from "next/server";
-import { IProduct } from "@entities/product";
+import { PrismaClient } from "../../../../src/generated/prisma";
+import type { ProductSize } from "../../../../src/generated/prisma";
 
-// Мокированные данные продуктов
-const mockProducts: IProduct[] = [
-  {
-    id: "1",
-    images: [
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-    ],
-    price: 10700,
-    title: "BAGGY-JORTS \n«OIL TRANSFORMER»",
-    shortTitle: "BAGGY-JORTS",
-    sizes: ["S", "M", "L", "XL"],
-    features: [
-      "Шорты трансформируются в брюки",
-      "8 разъемных молний YKK",
-      "Кнопки для регулирования ширины снизу",
-      "Скрытый логотип спереди — вышивка MATTHEW MASLOV при трансформировании в брюки",
-      "Шеврон «BUTTER» на кармане сзади изделия",
-      "Свободный крой, подходит под демисезон, унисекс",
-    ],
-    composition: ["100% хлопок, 360 гр."],
-  },
-  {
-    id: "2",
-    images: [
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-    ],
-    price: 8900,
-    title: "OVERSIZED HOODIE \n«METAMORPHOSIS»",
-    shortTitle: "OVERSIZED HOODIE",
-    sizes: ["M", "L", "XL", "XXL"],
-    features: [
-      "Объемный силуэт, оверсайз крой",
-      "Капюшон с регулируемыми стяжками",
-      "Карман-кенгуру с потайными отделениями",
-      "Рукава с манжетами на резинке",
-      "Вышивка MATTHEW MASLOV на груди",
-      "Принт «METAMORPHOSIS» на спине",
-      "Унисекс модель",
-    ],
-    composition: ["80% хлопок, 20% полиэстер, 420 гр."],
-  },
-  {
-    id: "3",
-    images: [
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-    ],
-    price: 12500,
-    title: "CARGO PANTS \n«URBAN ARCHITECT»",
-    shortTitle: "CARGO PANTS",
-    sizes: ["S", "M", "L", "XL"],
-    features: [
-      "Множественные карманы с клапанами",
-      "Регулируемые стяжки на штанинах",
-      "Усиленные швы и фурнитура",
-      "Съемные элементы декора",
-      "Скрытые молнии на коленях",
-      "Светоотражающие элементы",
-      "Тактический стиль, urban функциональность",
-    ],
-    composition: ["65% хлопок, 35% нейлон рипстоп, 340 гр."],
-  },
-  {
-    id: "4",
-    images: [
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-    ],
-    price: 15700,
-    title: "TECH VEST \n«CYBER GUARDIAN»",
-    shortTitle: "TECH VEST",
-    sizes: ["M", "L", "XL"],
-    features: [
-      "Модульная система крепления аксессуаров",
-      "Водоотталкивающее покрытие",
-      "Скрытые карманы для гаджетов",
-      "Регулируемые боковые стяжки",
-      "Светоотражающие логотипы",
-      "Съемный капюшон",
-      "Футуристический дизайн",
-    ],
-    composition: ["Нейлон таслан, мембрана, неопрен"],
-  },
-  {
-    id: "5",
-    images: [
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-      "/assets/products/jacket/1.webp",
-    ],
-    price: 18900,
-    title: "MULTI-JACKET \n«SYSTEM OVERRIDE»",
-    shortTitle: "MULTI-JACKET",
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    features: [
-      "Трансформируемый дизайн 3-в-1",
-      "Съемная подкладка и рукава",
-      "Система вентиляции с молниями",
-      "Водонепроницаемая мембрана 10000мм",
-      "Проклеенные швы",
-      "Множественные карманы с влагозащитой",
-      "Регулируемый капюшон со стяжками",
-      "Светоотражающие вставки",
-    ],
-    composition: ["Нейлон рипстоп, мембрана Gore-Tex, утеплитель Thinsulate"],
-  },
-];
+const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   try {
-    // Имитируем задержку API
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
     // Получаем URL и query параметры
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
     if (id) {
-      const product = mockProducts.find((p) => p.id === id);
+      const product = await prisma.product.findUnique({
+        where: { id },
+        include: {
+          sizes: {
+            where: {
+              quantity: { gt: 0 }, // только размеры с остатками
+            },
+          },
+        },
+      });
 
       if (!product) {
         return NextResponse.json(
@@ -144,16 +29,51 @@ export async function GET(request: Request) {
         );
       }
 
+      // Преобразуем данные в формат IProduct
+      const productData = {
+        id: product.id,
+        title: product.title,
+        shortTitle: product.shortTitle,
+        price: product.price,
+        images: JSON.parse(product.images),
+        features: JSON.parse(product.features),
+        composition: JSON.parse(product.composition),
+        sizes: product.sizes.map((size: ProductSize) => size.size),
+      };
+
       return NextResponse.json({
-        product,
+        product: productData,
         success: true,
       });
     }
 
-    // Если ID не передан, возвращаем все товары
+    // Если ID не передан, возвращаем все активные товары
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      include: {
+        sizes: {
+          where: {
+            quantity: { gt: 0 }, // только размеры с остатками
+          },
+        },
+      },
+    });
+
+    // Преобразуем данные в формат IProduct[]
+    const productsData = products.map((product) => ({
+      id: product.id,
+      title: product.title,
+      shortTitle: product.shortTitle,
+      price: product.price,
+      images: JSON.parse(product.images),
+      features: JSON.parse(product.features),
+      composition: JSON.parse(product.composition),
+      sizes: product.sizes.map((size: ProductSize) => size.size),
+    }));
+
     return NextResponse.json({
-      products: mockProducts,
-      total: mockProducts.length,
+      products: productsData,
+      total: productsData.length,
       success: true,
     });
   } catch (error) {
@@ -178,28 +98,53 @@ export async function POST(request: Request) {
       );
     }
 
-    const newProduct: IProduct = {
-      id: (mockProducts.length + 1).toString(),
-      images: body.images || [],
-      price: body.price,
-      title: body.title,
-      shortTitle: body.shortTitle || body.title,
-      sizes: body.sizes || ["M", "L", "XL"],
-      features: body.features || [],
-      composition: body.composition || [],
-    };
+    const product = await prisma.product.create({
+      data: {
+        title: body.title,
+        shortTitle: body.shortTitle || body.title,
+        price: body.price,
+        images: JSON.stringify(body.images || []),
+        features: JSON.stringify(body.features || []),
+        composition: JSON.stringify(body.composition || []),
+        isActive: true,
+      },
+      include: {
+        sizes: true,
+      },
+    });
 
-    mockProducts.push(newProduct);
+    // Если переданы размеры, создаем их
+    if (body.sizes && Array.isArray(body.sizes)) {
+      for (const sizeData of body.sizes) {
+        await prisma.productSize.create({
+          data: {
+            productId: product.id,
+            size: sizeData.size,
+            quantity: sizeData.quantity || 0,
+          },
+        });
+      }
+    }
 
     return NextResponse.json(
       {
-        product: newProduct,
+        product: {
+          id: product.id,
+          title: product.title,
+          shortTitle: product.shortTitle,
+          price: product.price,
+          images: JSON.parse(product.images),
+          features: JSON.parse(product.features),
+          composition: JSON.parse(product.composition),
+          sizes: [],
+        },
         success: true,
       },
       { status: 201 }
     );
   } catch (error) {
     console.error("Failed to create product:", error);
+
     return NextResponse.json(
       { error: "Failed to create product", success: false },
       { status: 500 }

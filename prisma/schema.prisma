@@ -27,3 +27,34 @@ model PromoCode {
 
   @@map("promo_codes")
 }
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  shortTitle  String
+  price       Int
+  images      String   // JSON массив изображений
+  features    String   // JSON массив характеристик
+  composition String   // JSON массив состава
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  sizes       ProductSize[]
+
+  @@map("products")
+}
+
+model ProductSize {
+  id        String   @id @default(cuid())
+  productId String
+  size      String   // S, M, L, XL, XXL
+  quantity  Int      @default(0) // количество в наличии
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, size])
+  @@map("product_sizes")
+}
